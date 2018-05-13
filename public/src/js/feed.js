@@ -4,6 +4,18 @@ var closeCreatePostModalButton = document.querySelector('#close-create-post-moda
 
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
+  if (window.defferPropmt) {
+    window.defferPropmt.prompt();
+    window.defferPropmt.userChoice.then(choiceRes => {
+      console.log(choiceRes);
+      if (choiceRes.outcome === 'dismissed') {
+        console.log('the fucking user canclled the propmt');
+      } else {
+        console.log('installed');
+      }
+    });
+    window.defferPropmt = null;
+  }
 }
 
 function closeCreatePostModal() {
