@@ -1,18 +1,13 @@
-// this is my really first SW XD
-self.addEventListener('install', event => {
-    console.log('[Service Worker] => installing SW :', event);
+
+self.addEventListener('install', function(event) {
+  console.log('[Service Worker] Installing Service Worker ...', event);
 });
 
-self.addEventListener('activate', event => {
-    console.log('[Service Worker] => activating SW :', event);
-    self.clients.claim();
+self.addEventListener('activate', function(event) {
+  console.log('[Service Worker] Activating Service Worker ....', event);
+  return self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-    console.log('[Service Worker] => fetching :', event);
-    event.respondWith(fetch(event.request));
+self.addEventListener('fetch', function(event) {
+  event.respondWith(fetch(event.request));
 });
-
-self.addEventListener('push', event => {
-    console.log('[Service Worker] => pushing :', event);
-})
