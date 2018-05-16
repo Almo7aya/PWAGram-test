@@ -1,5 +1,4 @@
-
-self.addEventListener('install', function(event) {
+self.addEventListener('install', function (event) {
   console.log('[Service Worker] Installing Service Worker ...', event);
   event.waitUntil(
     caches.open('static').then(cache => {
@@ -17,24 +16,34 @@ self.addEventListener('install', function(event) {
         'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css',
         '/src/css/app.css',
         '/src/css/feed.css',
-        '/manifest.json',
-        ''
+        '/src/images/main-image.jpg'
       ]);
     })
   )
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', function (event) {
   console.log('[Service Worker] Activating Service Worker ....', event);
   return self.clients.claim();
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function (event) {
   event.respondWith(
     caches.match(event.request)
     .then(response => {
+      if (event.request === 'chrome-extension://odkdoekijebogaiopbjgkgogkgifjfnk/detector.js' || event.request === 'chrome-extension://elgalmkoelokbchhkhacckoklkejnhcd/build/ng-validate.js') {
+        return fetch(event.request)
+      }
+  
       if (response) return response;
-      return fetch(event.request);
+      return fetch(event.request).then(res => {
+        return caches.open('dinamic').then(ch => {
+          ch.put(event.request.url, res.clone());
+          return res;
+        });
+      }).catch(() => {
+
+      });
     })
-);
+  );
 });
