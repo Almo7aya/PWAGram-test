@@ -1,6 +1,6 @@
 
-const STATIC_CACHE_NAME = 'static-v19';
-const DYNAMIC_CACHE_NAME = 'dynamic-v13';
+const STATIC_CACHE_NAME = 'static-v21';
+const DYNAMIC_CACHE_NAME = 'dynamic-v15';
 
 self.addEventListener('install', function (event) {
   console.log('[Service Worker] Installing Service Worker ...', event);
@@ -9,7 +9,8 @@ self.addEventListener('install', function (event) {
       console.log('[Service Worker] caching ...');
       cache.addAll([
         '/',
-        'index.html',
+        '/offline.html',
+        '/index.html',
         '/src/js/app.js',
         '/src/js/material.min.js',
         '/src/js/promise.js',
@@ -51,9 +52,7 @@ self.addEventListener('fetch', function (event) {
           ch.put(event.request.url, res.clone());
           return res;
         });
-      }).catch(() => {
-
-      });
+      }).catch(() => caches.open(STATIC_CACHE_NAME).then(cache => cache.match('offline.html')));
     })
   );
 });
