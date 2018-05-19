@@ -1,6 +1,6 @@
 
-const STATIC_CACHE_NAME = 'static-v11';
-const DYNAMIC_CACHE_NAME = 'dynamic-v11';
+const STATIC_CACHE_NAME = 'static-v19';
+const DYNAMIC_CACHE_NAME = 'dynamic-v13';
 
 self.addEventListener('install', function (event) {
   console.log('[Service Worker] Installing Service Worker ...', event);
@@ -48,7 +48,7 @@ self.addEventListener('fetch', function (event) {
       if (response) return response;
       return fetch(event.request).then(res => {
         return caches.open(DYNAMIC_CACHE_NAME).then(ch => {
-          // ch.put(event.request.url, res.clone());
+          ch.put(event.request.url, res.clone());
           return res;
         });
       }).catch(() => {
