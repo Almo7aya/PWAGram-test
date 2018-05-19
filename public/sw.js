@@ -1,7 +1,11 @@
+
+const STATIC_CACHE_NAME = 'static-v11';
+const DYNAMIC_CACHE_NAME = 'dynamic-v11';
+
 self.addEventListener('install', function (event) {
   console.log('[Service Worker] Installing Service Worker ...', event);
   event.waitUntil(
-    caches.open('static').then(cache => {
+    caches.open(STATIC_CACHE_NAME).then(cache => {
       console.log('[Service Worker] caching ...');
       cache.addAll([
         '/',
@@ -24,6 +28,12 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('activate', function (event) {
   console.log('[Service Worker] Activating Service Worker ....', event);
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => {
+    if (key !== DYNAMIC_CACHE_NAME && key !== STATIC_CACHE_NAME) {
+      console.log('[Service Worker] deleting old caches...', key);
+      return caches.delete(key);
+    }
+  }))));
   return self.clients.claim();
 });
 
@@ -31,14 +41,14 @@ self.addEventListener('fetch', function (event) {
   event.respondWith(
     caches.match(event.request)
     .then(response => {
-      if (event.request === 'chrome-extension://odkdoekijebogaiopbjgkgogkgifjfnk/detector.js' || event.request === 'chrome-extension://elgalmkoelokbchhkhacckoklkejnhcd/build/ng-validate.js') {
+      if (/.*detector.*$|.*ng-validate.*$/.test(event.request.url)) {
         return fetch(event.request)
       }
-  
+
       if (response) return response;
       return fetch(event.request).then(res => {
-        return caches.open('dinamic').then(ch => {
-          ch.put(event.request.url, res.clone());
+        return caches.open(DYNAMIC_CACHE_NAME).then(ch => {
+          // ch.put(event.request.url, res.clone());
           return res;
         });
       }).catch(() => {
