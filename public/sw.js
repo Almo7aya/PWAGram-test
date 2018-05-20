@@ -1,5 +1,5 @@
 
-const STATIC_CACHE_NAME = 'static-v21';
+const STATIC_CACHE_NAME = 'static-v23';
 const DYNAMIC_CACHE_NAME = 'dynamic-v15';
 
 self.addEventListener('install', function (event) {
@@ -38,21 +38,21 @@ self.addEventListener('activate', function (event) {
   return self.clients.claim();
 });
 
-self.addEventListener('fetch', function (event) {
-  event.respondWith(
-    caches.match(event.request)
-    .then(response => {
-      if (/.*detector.*$|.*ng-validate.*$/.test(event.request.url)) {
-        return fetch(event.request)
-      }
+// self.addEventListener('fetch', function (event) {
+//   event.respondWith(
+//     caches.match(event.request)
+//     .then(response => {
+//       if (/.*detector.*$|.*ng-validate.*$/.test(event.request.url)) {
+//         return fetch(event.request)
+//       }
 
-      if (response) return response;
-      return fetch(event.request).then(res => {
-        return caches.open(DYNAMIC_CACHE_NAME).then(ch => {
-          ch.put(event.request.url, res.clone());
-          return res;
-        });
-      }).catch(() => caches.open(STATIC_CACHE_NAME).then(cache => cache.match('offline.html')));
-    })
-  );
-});
+//       if (response) return response;
+//       return fetch(event.request).then(res => {
+//         return caches.open(DYNAMIC_CACHE_NAME).then(ch => {
+//           ch.put(event.request.url, res.clone());
+//           return res;
+//         });
+//       }).catch(() => caches.open(STATIC_CACHE_NAME).then(cache => cache.match('offline.html')));
+//     })
+//   );
+// });

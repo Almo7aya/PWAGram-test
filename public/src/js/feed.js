@@ -31,14 +31,20 @@ shareImageButton.addEventListener('click', openCreatePostModal);
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
 
-// function onSaveButtomClicked (event) {
-//   console.log('clicked');
-//   if ('caches' in window) {
-//     caches.open('user-cache').then(cache => {
-//       cache.addAll(['https://httpbin.org/get', '/src/images/sf-boat.jpg']);
-//     });
-//   }
-// }
+function onSaveButtomClicked (event) {
+  console.log('clicked');
+  if ('caches' in window) {
+    caches.open('user-cache').then(cache => {
+      cache.addAll(['https://httpbin.org/get', '/src/images/sf-boat.jpg']);
+    });
+  }
+}
+
+function clearCard () {
+  while(sharedMomentsArea.hasChildNodes()) {
+    sharedMomentsArea.removeChild(sharedMomentsArea.lastChild);
+  }
+}
 
 function createCard() {
   var cardWrapper = document.createElement('div');
@@ -66,10 +72,23 @@ function createCard() {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-fetch('https://httpbin.org/get')
+const url = 'https://httpbin.org/get';
+let networkDataRecived = false;
+
+fetch(url)
   .then(function(res) {
+    networkDataRecived = true;
     return res.json();
   })
   .then(function(data) {
+    clearCard();    
     createCard();
   });
+
+  if ('caches' in window) {
+    caches.match(url).then( res  => res.json() )
+    .then(data => {
+      clearCard();      
+      createCard();
+    }); 
+  }
